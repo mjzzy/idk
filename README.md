@@ -490,6 +490,31 @@ ToggleOff = Color3.fromRGB(231, 76, 60)
 ```
 
 ---
+## Notification Example 
+
+```lua
+local win = lib:win("Example")
+
+win:notify({
+    Title = "Loaded",
+    Content = "UI Ready",
+    Duration = 3
+})
+
+local main = win:tab("Main")
+
+local combat = main:section("Combat")
+
+combat:toggle("Kill Aura", false, function(v)
+    print(v)
+end)
+
+combat:slider("Range", 1, 100, 25, function(v)
+    print(v)
+end)
+```
+
+---
 
 # Current Limitations
 
@@ -498,7 +523,6 @@ The current version does not include:
 * Dropdowns
 * Keybind Components
 * Color Pickers
-* Notifications
 * Paragraphs
 * Section Containers
 * Configuration Saving
