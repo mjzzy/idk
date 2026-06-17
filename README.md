@@ -1,46 +1,420 @@
-# Dark Framework — Clean Dark UI Library
+# Clean Dark UI Library
 
-A high-performance, completely procedural dark-themed UI library designed for Roblox scripting. This library removes dependencies on external `rbxassetid://` objects by generating a clean, modern, and sleek interface entirely through code. 
-
-Features smooth animations, zero-lag custom dragging mechanics, a clean minimize-to-tray architecture, and completely responsive canvas scaling.
+A lightweight, modern Roblox UI library featuring a clean dark theme, smooth animations, draggable windows, tab support, sliders, toggles, textboxes, and automatic minimize/restore functionality.
 
 ---
 
-##  Key Features
+## Preview
 
-- ** 100% Procedural Architecture:** No external assets, textures, or Roblox IDs are loaded. Completely independent and bulletproof against asset deletion or tracking errors.
-- ** True Dark Aesthetic:** Hand-picked professional color palette utilizing deep charcoal fields (`#18181a`), crisp slate elements (`#26262a`), and electric iOS-style action accents.
-- ** Clean Minimize-to-Tray:** Minimizing the UI safely shrinks the main window away using an easing interpolation and opens a compact, styled "Restore UI" floating action tile in the lower-right margin of the screen.
-- ** Dynamic Content Canvas:** Automatically measures element layout scales (`UIListLayout` interpolation) and adjusts scroll bounds instantly.
-- ** Hardened Drag Dynamics:** Custom physics-less window movement bound to input shifts ensures fluid positioning without administrative delays.
+### Features
+
+* Modern dark design
+* Multi-tab interface
+* Draggable window
+* Animated UI interactions
+* Buttons
+* Toggles
+* Sliders
+* Textboxes
+* Labels
+* Hidden GUI support (`gethui`)
+* Minimize / Restore system
+* Close button
+* Keyboard toggle (`K`)
 
 ---
 
-## 🛠️ Color Palette Configuration
+## Installation
 
-The user interface uses a centralized, uniform structural theme configuration which can be easily hot-swapped within the source file:
+### Using `loadstring`
 
 ```lua
-local Theme = {
-    Background = Color3.fromRGB(24, 24, 26),      -- Deep Off-Black Field
-    Topbar = Color3.fromRGB(32, 32, 36),          -- Navigation Banner
-    Accent = Color3.fromRGB(0, 122, 255),         -- Electric Blue Focus
-    Text = Color3.fromRGB(240, 240, 245),         -- High Contrast Text
-    TextMuted = Color3.fromRGB(150, 150, 155),    -- Subtle Descriptions/Labels
-    ElementBg = Color3.fromRGB(38, 38, 42),       -- Structural Components Background
-    ToggleOn = Color3.fromRGB(46, 204, 113),      -- Vibrant State True
-    ToggleOff = Color3.fromRGB(231, 76, 60),     -- Vibrant State False
-    CornerRadius = UDim.new(0, 8)                -- Crisp Global Curvature
-}
+local Library = loadstring(game:HttpGet("YOUR_URL_HERE"))()
 ```
-## Initializing the Window
 
-local MyLib = require(path.to.library) -- Or use loadstring() execution
-local Window = MyLib:win("Your Title Here")
+### Using `require`
 
-----
+```lua
+local Library = require(path.to.library)
+```
 
-local Tab = Window:tab("Tab Name")
-## Generates a discrete layout list container within the view stack and mounts an interactive index selector on the sidebar column.
-Tab:label("Section Header or Text Label")
+---
 
+# Getting Started
+
+## Create a Window
+
+```lua
+local Window = Library:win("My Script")
+```
+
+### Parameters
+
+| Parameter | Type   | Description  |
+| --------- | ------ | ------------ |
+| title     | string | Window title |
+
+---
+
+## Create Tabs
+
+```lua
+local Main = Window:tab("Main")
+local Settings = Window:tab("Settings")
+```
+
+### Parameters
+
+| Parameter | Type   |
+| --------- | ------ |
+| title     | string |
+
+---
+
+# Components
+
+## Label
+
+Displays simple text.
+
+```lua
+Main:label("Combat")
+```
+
+### Parameters
+
+| Parameter | Type   |
+| --------- | ------ |
+| text      | string |
+
+---
+
+## Button
+
+Creates a clickable button.
+
+```lua
+Main:button("Kill All", function()
+    print("Clicked")
+end)
+```
+
+### Parameters
+
+| Parameter | Type     |
+| --------- | -------- |
+| text      | string   |
+| callback  | function |
+
+---
+
+## Toggle
+
+Creates an animated on/off switch.
+
+```lua
+Main:toggle("Auto Farm", false, function(state)
+    print(state)
+end)
+```
+
+### Parameters
+
+| Parameter | Type     |
+| --------- | -------- |
+| text      | string   |
+| default   | boolean  |
+| callback  | function |
+
+### Callback
+
+```lua
+function(state)
+    print(state)
+end
+```
+
+Returns:
+
+```lua
+true
+false
+```
+
+### Auto Callback
+
+If the default value is `true`, the callback fires automatically once.
+
+```lua
+Main:toggle("Enabled", true, function(state)
+    print(state)
+end)
+```
+
+Output:
+
+```lua
+true
+```
+
+---
+
+## Textbox
+
+Creates a text input field.
+
+```lua
+Main:textbox("Player Name", "", function(text)
+    print(text)
+end)
+```
+
+### Parameters
+
+| Parameter | Type     |
+| --------- | -------- |
+| title     | string   |
+| default   | string   |
+| callback  | function |
+
+### Notes
+
+* Fires when Enter is pressed.
+* Supports default values.
+* Automatically calls the callback if a default value is supplied.
+
+```lua
+Main:textbox("Username", "Builderman", function(text)
+    print(text)
+end)
+```
+
+---
+
+## Slider
+
+Creates a draggable slider.
+
+```lua
+Main:slider("WalkSpeed", 16, 100, 16, function(value)
+    print(value)
+end)
+```
+
+### Parameters
+
+| Parameter | Type     |
+| --------- | -------- |
+| title     | string   |
+| min       | number   |
+| max       | number   |
+| default   | number   |
+| callback  | function |
+
+### Notes
+
+* Rounded to whole numbers.
+* Callback fires when dragging ends.
+* Supports mouse and touch controls.
+
+---
+
+# Full Example
+
+```lua
+-- Execute / Require the Redesigned Dark GUI Module
+local DarkLib = loadstring(game:HttpGet("[https://raw.githubusercontent.com/YourRepo/DarkLib/main/lib.lua](https://raw.githubusercontent.com/YourRepo/DarkLib/main/lib.lua)"))()
+
+-- Instantiate Window context
+local win = DarkLib:win("Dark Framework v1.0")
+
+-- Define Combat Tab
+local combatTab = win:tab("Combat")
+combatTab:label("Aura Adjustments")
+
+combatTab:toggle("Active Kill Aura", false, function(enabled)
+    _G.KillAura = enabled
+    while _G.KillAura do
+        task.wait(0.1)
+        print("Executing aura sequence...")
+    end
+end)
+
+combatTab:slider("Target Distance Range", 5, 50, 15, function(rangeValue)
+    print("Range target updated: " .. tostring(rangeValue) .. " studs.")
+end)
+
+-- Define Settings Tab
+local settingsTab = win:tab("Settings")
+settingsTab:label("Client Environment")
+
+settingsTab:textbox("Custom Player Tag", "Guest", function(inputtedText)
+    print("Custom identity assigned: " .. inputtedText)
+end)
+
+settingsTab:button("Unhook Interface Thread", function()
+    game:GetService("CoreGui"):FindFirstChild("CleanDarkLib_Gui"):Destroy()
+    print("Execution pipeline terminated safely.")
+end)
+```
+
+---
+
+# Window Controls
+
+## Dragging
+
+Drag the window using the top bar.
+
+---
+
+## Minimize
+
+Click the `-` button or press:
+
+```text
+K
+```
+
+The window collapses and a floating restore button appears.
+
+---
+
+## Restore
+
+Click:
+
+```text
+Restore UI
+```
+
+or press:
+
+```text
+K
+```
+
+---
+
+## Close
+
+Click:
+
+```text
+×
+```
+
+This completely destroys the UI.
+
+---
+
+# API Reference
+
+## Library
+
+### Create Window
+
+```lua
+Library:win(title)
+```
+
+Returns:
+
+```lua
+Window
+```
+
+---
+
+## Window
+
+### Create Tab
+
+```lua
+Window:tab(title)
+```
+
+Returns:
+
+```lua
+Tab
+```
+
+---
+
+## Tab
+
+### Label
+
+```lua
+Tab:label(text)
+```
+
+### Button
+
+```lua
+Tab:button(text, callback)
+```
+
+### Toggle
+
+```lua
+Tab:toggle(text, default, callback)
+```
+
+### Textbox
+
+```lua
+Tab:textbox(text, default, callback)
+```
+
+### Slider
+
+```lua
+Tab:slider(text, min, max, default, callback)
+```
+
+---
+
+# Theme
+
+Built-in color palette:
+
+```lua
+Background = Color3.fromRGB(24, 24, 26)
+Topbar = Color3.fromRGB(32, 32, 36)
+
+Accent = Color3.fromRGB(0, 122, 255)
+
+Text = Color3.fromRGB(240, 240, 245)
+TextMuted = Color3.fromRGB(150, 150, 155)
+
+ElementBg = Color3.fromRGB(38, 38, 42)
+
+ToggleOn = Color3.fromRGB(46, 204, 113)
+ToggleOff = Color3.fromRGB(231, 76, 60)
+```
+
+---
+
+# Current Limitations
+
+The current version does not include:
+
+* Dropdowns
+* Keybind Components
+* Color Pickers
+* Notifications
+* Paragraphs
+* Section Containers
+* Configuration Saving
+* Theme Customization API
+
+---
+
+
+# Credits
+
+Created by **mjzzy**
+
+Made for Roblox script hubs, utilities, and executor projects.
