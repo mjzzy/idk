@@ -31,6 +31,21 @@ function module:win(title)
     screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     screenGui.Parent = targetParent
 
+    -- Notification Holder
+    local notifHolder = Instance.new("Frame")
+    notifHolder.Name = "Notifications"
+    notifHolder.Size = UDim2.new(0, 300, 1, -20)
+    notifHolder.Position = UDim2.new(1, -320, 0, 10)
+    notifHolder.BackgroundTransparency = 1
+    notifHolder.Parent = screenGui
+
+    local notifLayout = Instance.new("UIListLayout")
+    notifLayout.Padding = UDim.new(0, 8)
+    notifLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+    notifLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
+    notifLayout.Parent = notifHolder
+
+
     -- Main Window Frame
     local mainWindow = Instance.new("Frame")
     mainWindow.Name = "MainWindow"
@@ -141,6 +156,10 @@ function module:win(title)
     local tabsLayout = Instance.new("UIListLayout")
     tabsLayout.Padding = UDim.new(0, 5)
     tabsLayout.Parent = tabsContainer
+
+    tabsLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        tabsContainer.CanvasSize = UDim2.new(0,0,0,tabsLayout.AbsoluteContentSize.Y + 5)
+    end)
 
     -- Container Holder for Pages
     local pagesHolder = Instance.new("Frame")
@@ -287,6 +306,7 @@ function module:win(title)
         end
 
         local contents = {}
+        local currentParent = pageCanvas
 
         -- Elements Setup helper
         local function createElementFrame(height, parent)
@@ -294,9 +314,57 @@ function module:win(title)
             frame.Size = UDim2.new(1, -5, 0, height)
             frame.BackgroundColor3 = Theme.ElementBg
             frame.BorderSizePixel = 0
-            frame.Parent = parent
+            frame.Parent = parent or currentParent
             Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 6)
             return frame
+        end
+
+        function contents:section(name)
+            local sectionFrame = Instance.new("Frame")
+            sectionFrame.Size = UDim2.new(1,-5,0,35)
+            sectionFrame.AutomaticSize = Enum.AutomaticSize.Y
+            sectionFrame.BackgroundColor3 = Theme.Background
+            sectionFrame.BorderSizePixel = 0
+            sectionFrame.Parent = pageCanvas
+            Instance.new("UICorner", sectionFrame).CornerRadius = Theme.CornerRadius
+
+            local title = Instance.new("TextLabel")
+            title.Size = UDim2.new(1,-10,0,30)
+            title.Position = UDim2.new(0,10,0,0)
+            title.BackgroundTransparency = 1
+            title.Text = name
+            title.Font = Enum.Font.GothamBold
+            title.TextSize = 14
+            title.TextColor3 = Theme.Accent
+            title.TextXAlignment = Enum.TextXAlignment.Left
+            title.Parent = sectionFrame
+
+            local holder = Instance.new("Frame")
+            holder.Size = UDim2.new(1,-10,0,0)
+            holder.Position = UDim2.new(0,5,0,35)
+            holder.BackgroundTransparency = 1
+            holder.AutomaticSize = Enum.AutomaticSize.Y
+            holder.Parent = sectionFrame
+
+            local layout = Instance.new("UIListLayout")
+            layout.Padding = UDim.new(0,5)
+            layout.Parent = holder
+
+            local sectionApi = {}
+
+            setmetatable(sectionApi,{
+                __index=function(_,k)
+                    return function(_,...)
+                        local old=currentParent
+                        currentParent=holder
+                        local result=contents[k](contents,...)
+                        currentParent=old
+                        return result
+                    end
+                end
+            })
+
+            return sectionApi
         end
 
         -- Clean Title Label Component
@@ -497,6 +565,45 @@ function module:win(title)
         end
 
         return contents
+    end
+
+
+    function sections:notify(data)
+        local title = data.Title or "Notification"
+        local content = data.Content or ""
+        local duration = data.Duration or 3
+
+        local frame = Instance.new("Frame")
+        frame.Size = UDim2.new(1,0,0,65)
+        frame.BackgroundColor3 = Theme.ElementBg
+        frame.Parent = notifHolder
+        Instance.new("UICorner", frame).CornerRadius = Theme.CornerRadius
+
+        local titleLbl = Instance.new("TextLabel")
+        titleLbl.Size = UDim2.new(1,-10,0,22)
+        titleLbl.Position = UDim2.new(0,8,0,5)
+        titleLbl.BackgroundTransparency = 1
+        titleLbl.Text = title
+        titleLbl.Font = Enum.Font.GothamBold
+        titleLbl.TextColor3 = Theme.Text
+        titleLbl.TextXAlignment = Enum.TextXAlignment.Left
+        titleLbl.Parent = frame
+
+        local contentLbl = Instance.new("TextLabel")
+        contentLbl.Size = UDim2.new(1,-10,1,-28)
+        contentLbl.Position = UDim2.new(0,8,0,25)
+        contentLbl.BackgroundTransparency = 1
+        contentLbl.TextWrapped = true
+        contentLbl.Text = content
+        contentLbl.Font = Enum.Font.Gotham
+        contentLbl.TextColor3 = Theme.TextMuted
+        contentLbl.TextXAlignment = Enum.TextXAlignment.Left
+        contentLbl.TextYAlignment = Enum.TextYAlignment.Top
+        contentLbl.Parent = frame
+
+        task.delay(duration,function()
+            if frame then frame:Destroy() end
+        end)
     end
 
     return sections
