@@ -222,39 +222,133 @@ end)
 # Full Example
 
 ```lua
--- Execute / Require the Redesigned Dark GUI Module
-local DarkLib = loadstring(game:HttpGet("[https://raw.githubusercontent.com/YourRepo/DarkLib/main/lib.lua](https://raw.githubusercontent.com/YourRepo/DarkLib/main/lib.lua)"))()
+-- Load Library
+local DarkLib = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/YourRepo/DarkLib/main/lib.lua"
+))()
 
--- Instantiate Window context
-local win = DarkLib:win("Dark Framework v1.0")
+-- Create Window
+local Window = DarkLib:win("Dark Framework v1.0")
 
--- Define Combat Tab
-local combatTab = win:tab("Combat")
-combatTab:label("Aura Adjustments")
+--------------------------------------------------
+-- MAIN TAB
+--------------------------------------------------
 
-combatTab:toggle("Active Kill Aura", false, function(enabled)
-    _G.KillAura = enabled
-    while _G.KillAura do
-        task.wait(0.1)
-        print("Executing aura sequence...")
+local Main = Window:tab("Main")
+
+Main:label("Framework Demonstration")
+
+Main:button("Print Hello", function()
+    print("Hello from Dark Framework!")
+end)
+
+Main:textbox("Username", "Guest", function(text)
+    print("Username:", text)
+end)
+
+Main:slider("WalkSpeed", 16, 100, 16, function(value)
+    print("WalkSpeed set to:", value)
+end)
+
+--------------------------------------------------
+-- COMBAT TAB
+--------------------------------------------------
+
+local Combat = Window:tab("Combat")
+
+Combat:label("Combat Features")
+
+local KillAura = false
+
+Combat:toggle("Kill Aura", false, function(state)
+    KillAura = state
+
+    if state then
+        task.spawn(function()
+            while KillAura do
+                print("Searching for targets...")
+                task.wait(1)
+            end
+        end)
     end
 end)
 
-combatTab:slider("Target Distance Range", 5, 50, 15, function(rangeValue)
-    print("Range target updated: " .. tostring(rangeValue) .. " studs.")
+Combat:slider("Aura Range", 5, 100, 25, function(value)
+    print("Aura Range:", value)
 end)
 
--- Define Settings Tab
-local settingsTab = win:tab("Settings")
-settingsTab:label("Client Environment")
-
-settingsTab:textbox("Custom Player Tag", "Guest", function(inputtedText)
-    print("Custom identity assigned: " .. inputtedText)
+Combat:button("Attack Closest Target", function()
+    print("Attacking nearest enemy...")
 end)
 
-settingsTab:button("Unhook Interface Thread", function()
-    game:GetService("CoreGui"):FindFirstChild("CleanDarkLib_Gui"):Destroy()
-    print("Execution pipeline terminated safely.")
+--------------------------------------------------
+-- MOVEMENT TAB
+--------------------------------------------------
+
+local Movement = Window:tab("Movement")
+
+Movement:label("Movement Controls")
+
+Movement:toggle("Infinite Jump", false, function(state)
+    print("Infinite Jump:", state)
+end)
+
+Movement:toggle("No Clip", false, function(state)
+    print("No Clip:", state)
+end)
+
+Movement:slider("Jump Power", 50, 200, 50, function(value)
+    print("Jump Power:", value)
+end)
+
+--------------------------------------------------
+-- VISUALS TAB
+--------------------------------------------------
+
+local Visuals = Window:tab("Visuals")
+
+Visuals:label("ESP Settings")
+
+Visuals:toggle("Player ESP", false, function(state)
+    print("ESP:", state)
+end)
+
+Visuals:toggle("Tracers", false, function(state)
+    print("Tracers:", state)
+end)
+
+Visuals:toggle("Boxes", false, function(state)
+    print("Boxes:", state)
+end)
+
+--------------------------------------------------
+-- SETTINGS TAB
+--------------------------------------------------
+
+local Settings = Window:tab("Settings")
+
+Settings:label("Client Settings")
+
+Settings:textbox("Custom Tag", "DarkUser", function(text)
+    print("Tag Updated:", text)
+end)
+
+Settings:button("Rejoin Server", function()
+    print("Rejoin clicked")
+end)
+
+Settings:button("Copy Discord Invite", function()
+    print("Discord copied")
+end)
+
+Settings:button("Unload UI", function()
+    local gui = game:GetService("CoreGui"):FindFirstChild("CleanDarkLib_Gui")
+
+    if gui then
+        gui:Destroy()
+    end
+
+    print("UI unloaded")
 end)
 ```
 
